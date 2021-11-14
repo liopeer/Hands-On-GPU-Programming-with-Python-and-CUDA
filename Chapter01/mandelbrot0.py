@@ -13,7 +13,9 @@ def simple_mandelbrot(width, height, real_low, real_high, imag_low, imag_high, m
     imag_vals = np.linspace(imag_low, imag_high, height)
         
     # we will represent members as 1, non-members as 0.
+    # again: z_(n+1) = (z_n)^2 + c --> for which c is this smaller than upper bound after # iterations
     
+    # start with ones, set zero if not a member
     mandelbrot_graph = np.ones((height,width), dtype=np.float32)
     
     for x in range(width):

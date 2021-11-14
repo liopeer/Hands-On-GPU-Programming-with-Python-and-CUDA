@@ -12,7 +12,7 @@ from pycuda.elementwise import ElementwiseKernel
 mandel_ker = ElementwiseKernel(
 "pycuda::complex<float> *lattice, float *mandelbrot_graph, int max_iters, float upper_bound",
 """
-mandelbrot_graph[i] = 1;
+mandelbrot_graph[i] = 0;
 
 pycuda::complex<float> c = lattice[i]; 
 pycuda::complex<float> z(0,0);
@@ -22,9 +22,9 @@ for (int j = 0; j < max_iters; j++)
     
      z = z*z + c;
      
-     if(abs(z) > upper_bound)
+     if(abs(z) > 1000)
          {
-          mandelbrot_graph[i] = 0;
+          mandelbrot_graph[i] = j;
           break;
          }
 
@@ -58,14 +58,14 @@ def gpu_mandelbrot(width, height, real_low, real_high, imag_low, imag_high, max_
 if __name__ == '__main__':
 
     t1 = time()
-    mandel = gpu_mandelbrot(512,512,-2,2,-2,2,256, 2)
+    mandel = gpu_mandelbrot(4096,4096,-2,2,-2,2,1024, 2)
     t2 = time()
 
     mandel_time = t2 - t1
 
     t1 = time()
     fig = plt.figure(1)
-    plt.imshow(mandel, extent=(-2, 2, -2, 2))
+    plt.imshow(mandel, vmin=0, vmax=15)
     plt.savefig('mandelbrot.png', dpi=fig.dpi)
     t2 = time()
 
