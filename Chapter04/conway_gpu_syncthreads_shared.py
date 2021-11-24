@@ -32,6 +32,7 @@ __device__ int nbrs(int x, int y, int * in)
                    + in[ _INDEX(x+1, y+1) ] + in[ _INDEX(x+1, y) ] + in[ _INDEX(x+1, y-1) ] );
 }
 
+// p_lattice will now be the pointer to the global lattice, lattice to the shared
 __global__ void conway_ker_shared(int * p_lattice, int iters)
 {
    // x, y are the appropriate values for the cell covered by this thread
@@ -40,7 +41,7 @@ __global__ void conway_ker_shared(int * p_lattice, int iters)
    
    
    lattice[_INDEX(x,y)] = p_lattice[_INDEX(x,y)];
-   __syncthreads();
+   __syncthreads(); // each thread copies its own value into the shared lattice, we need to wait for them to finisch
 
    for (int i = 0; i < iters; i++)
    {
@@ -94,7 +95,9 @@ if __name__ == '__main__':
     lattice = np.int32( np.random.choice([1,0], N*N, p=[0.25, 0.75]).reshape(N, N) )
     lattice_gpu = gpuarray.to_gpu(lattice)    
     
-    conway_ker_shared(lattice_gpu, np.int32(1000000), grid=(1,1,1), block=(32,32,1))    
+    time1 = time()
+    conway_ker_shared(lattice_gpu, np.int32(1e6), grid=(1,1,1), block=(32,32,1))
+    print("calc needed", (time() - time1)*1000, "ms")    
     
     fig = plt.figure(1)
     plt.imshow(lattice_gpu.get())

@@ -86,8 +86,8 @@ if __name__ == '__main__':
     lattice_gpu = gpuarray.to_gpu(lattice)
 
     time1 = time()
-    conway_ker(lattice_gpu, np.int32(100000), grid=(1,1,1), block=(32,32,1))
-    print("calc took:", time() - time1, "s")
+    conway_ker(lattice_gpu, np.int32(1e6), grid=(1,1,1), block=(32,32,1))
+    print("calc took:", (time() - time1)*1000, "ms")
 
     fig = plt.figure(1)
     plt.imsave("conway_output.png", lattice_gpu.get())
