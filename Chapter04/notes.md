@@ -10,4 +10,11 @@
  - #define is used for macros. the preprocessor will include those macros in the code and then compile
  - the grid is made up of 1. Threads, 2. Blocks (at most 1024 threads), 3.
 
+### Second implementation
+ - before we let the host do the updating of the image
+ - now we wanna give everything to the kernel: pass the random field and get the thing back after some iterations
+ - for this we need to make sure every thread=pixel is ready with evaluating stuff before updating everything
+ - and also all pixels=threads must be updated before a new neighbor-check is started
+
 ### Blocks & Grids
+ - synchronizing all threads in one block can be done with the __syncthreads() function in CUDA

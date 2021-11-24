@@ -6,7 +6,8 @@ import pycuda.driver as drv
 from pycuda import gpuarray
 from pycuda.compiler import SourceModule
 import numpy as np
-import matplotlib.pyplot as plt 
+import matplotlib.pyplot as plt
+from time import time
 
 
 ker = SourceModule("""
@@ -81,9 +82,13 @@ if __name__ == '__main__':
     N = 32
     
     lattice = np.int32( np.random.choice([1,0], N*N, p=[0.25, 0.75]).reshape(N, N) )
+    plt.imsave("conway_input.png", lattice)
     lattice_gpu = gpuarray.to_gpu(lattice)
+
+    time1 = time()
     conway_ker(lattice_gpu, np.int32(100000), grid=(1,1,1), block=(32,32,1))
+    print("calc took:", time() - time1, "s")
+
     fig = plt.figure(1)
-    plt.imshow(lattice_gpu.get())
-    plt.show()
+    plt.imsave("conway_output.png", lattice_gpu.get())
     
