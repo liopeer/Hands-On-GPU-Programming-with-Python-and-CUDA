@@ -34,7 +34,7 @@ __global__ void conway_ker(int * lattice_out, int * lattice  )
    // x, y are the appropriate values for the cell covered by this thread
    int x = _X, y = _Y;
    
-   // count the number of neighbors around the current cell
+   // count the number of (living) neighbors around the current cell
    int n = nbrs(x, y, lattice);
                    
     
