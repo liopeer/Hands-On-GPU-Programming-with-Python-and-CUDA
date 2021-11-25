@@ -4,11 +4,12 @@ import numpy as np
 from pycuda import gpuarray
 from pycuda.compiler import SourceModule
 from time import time
+
 # this is a naive parallel prefix-sum kernel that uses shared memory
 naive_ker = SourceModule("""
 __global__ void naive_prefix(double *vec, double *out)
 {
-     __shared__ double sum_buf[1024];     
+     __shared__ double sum_buf[1024]; // we'll use this as a buffer for our calculation
      int tid = threadIdx.x;     
      sum_buf[tid] = vec[tid];
      
