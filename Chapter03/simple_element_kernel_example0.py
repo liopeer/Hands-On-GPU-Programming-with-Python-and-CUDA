@@ -6,6 +6,7 @@ from pycuda.elementwise import ElementwiseKernel
 
 host_data = np.float32( np.random.random(50000000) ) # 50million
 
+# arguments (pointers), operation, name (why does it need one?)
 gpu_2x_ker = ElementwiseKernel(
 "float *in, float *out",
 "out[i] = 2*in[i];",
@@ -13,11 +14,11 @@ gpu_2x_ker = ElementwiseKernel(
 
 def speedcomparison():
     t1 = time()
-    host_data_2x =  host_data * np.float32(2)
+    host_data_2x =  host_data * np.float32(2) # on the CPU
     t2 = time()
     print('total time to compute on CPU: %f' % (t2 - t1))
 
-    device_data = gpuarray.to_gpu(host_data)
+    device_data = gpuarray.to_gpu(host_data) # create pointer
     # allocate memory for output
     device_data_2x = gpuarray.empty_like(device_data)
     t1 = time()

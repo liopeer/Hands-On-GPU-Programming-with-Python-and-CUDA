@@ -6,6 +6,7 @@ matplotlib.use('Agg')
 from matplotlib import pyplot as plt
 import numpy as np
 
+# definition of the Mandelbrot set: z_(n+1) = (z_n)^2 + c, for which c complex this sequence does not diverge
 
 def simple_mandelbrot(width, height, real_low, real_high, imag_low, imag_high, max_iters, upper_bound):
     
@@ -22,13 +23,14 @@ def simple_mandelbrot(width, height, real_low, real_high, imag_low, imag_high, m
         
         for y in range(height):
             
-            c = np.complex64( real_vals[x] + imag_vals[y] * 1j  )            
-            z = np.complex64(0)
+            c = np.complex64( real_vals[x] + imag_vals[y] * 1j  )
+            z = np.complex64(0) # setting z to 0 when trying out new value for c
             
             for i in range(max_iters):
                 
                 z = z**2 + c
                 
+                # check after every iteration in order to not do too many that are not needed
                 if(np.abs(z) > upper_bound):
                     mandelbrot_graph[y,x] = 0
                     break

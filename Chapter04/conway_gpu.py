@@ -63,17 +63,15 @@ __global__ void conway_ker(int * lattice_out, int * lattice  )
 
 conway_ker = ker.get_function("conway_ker")
      
-
-def update_gpu(frameNum, img, newLattice_gpu, lattice_gpu, N):
+# def update_gpu(frameNum, img, newLattice_gpu, lattice_gpu, N):
+def update_gpu(newLattice_gpu, lattice_gpu, N):
     
     conway_ker(  newLattice_gpu, lattice_gpu, grid=(N/32,N/32,1), block=(32,32,1)   )
     
-    img.set_data(newLattice_gpu.get() )
+    #img.set_data(newLattice_gpu.get() )
     
     
     lattice_gpu[:] = newLattice_gpu[:]
-    
-    return img
     
 
 if __name__ == '__main__':
@@ -85,8 +83,11 @@ if __name__ == '__main__':
     
     newLattice_gpu = gpuarray.empty_like(lattice_gpu)        
 
-    fig, ax = plt.subplots()
-    img = ax.imshow(lattice_gpu.get(), interpolation='nearest')
-    ani = animation.FuncAnimation(fig, update_gpu, fargs=(img, newLattice_gpu, lattice_gpu, N, ) , interval=0, frames=1000, save_count=1000)    
+    #fig, ax = plt.subplots()
+    for i in range(1000):
+       update_gpu(newLattice_gpu, lattice_gpu, N)
+       
+    plt.imsave("conway.png", newLattice_gpu.get())
+    #ani = animation.FuncAnimation(fig, update_gpu, fargs=(img, newLattice_gpu, lattice_gpu, N, ) , interval=0, frames=1000, save_count=1000)    
      
-    plt.show()
+    #plt.show()
