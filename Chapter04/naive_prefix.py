@@ -4,6 +4,7 @@ import numpy as np
 from pycuda import gpuarray
 from pycuda.compiler import SourceModule
 from time import time
+import numpy as np
 
 # this is a naive parallel prefix-sum kernel that uses shared memory
 naive_ker = SourceModule("""
@@ -11,7 +12,7 @@ __global__ void naive_prefix(double *vec, double *out)
 {
      __shared__ double sum_buf[1024]; // we'll use this as a buffer for our calculation
      int tid = threadIdx.x;     
-     sum_buf[tid] = vec[tid];
+     sum_buf[tid] = vec[tid]; // each thread can copy its own element to the buffer
      
      // begin parallel prefix sum algorithm
      
@@ -19,7 +20,7 @@ __global__ void naive_prefix(double *vec, double *out)
      for (int i=0; i < 10; i++)
      {
          __syncthreads();
-         if (tid >= iter )
+         if (tid >= iter ) // iter is similar to 2^i
          {
              sum_buf[tid] = sum_buf[tid] + sum_buf[tid - iter];            
          }
@@ -48,6 +49,6 @@ if __name__ == '__main__':
     naive_gpu( testvec_gpu , outvec_gpu, block=(1024,1,1), grid=(1,1,1))
     
     total_sum = sum( testvec)
-    total_sum_gpu = outvec_gpu[-1].get()
+    total_sum_gpu = outvec_gpu[-1].get() # last element of the additive sequence
     
-    print "Does our kernel work correctly? : {}".format(np.allclose(total_sum_gpu , total_sum) )
+    print("Does our kernel work correctly? : {}".format(np.allclose(total_sum_gpu , total_sum) ))

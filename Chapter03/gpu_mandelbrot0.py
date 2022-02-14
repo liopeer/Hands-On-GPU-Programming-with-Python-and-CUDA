@@ -9,12 +9,14 @@ from pycuda import gpuarray
 from pycuda.elementwise import ElementwiseKernel
 
 # first string: the input, pycuda::complex<float> is a special type from pycuda
+# variable "i" is reserved for the thread number
+# z(0,0) is the starting point
 mandel_ker = ElementwiseKernel(
 "pycuda::complex<float> *lattice, float *mandelbrot_graph, int max_iters, float upper_bound",
 """
 mandelbrot_graph[i] = 1;
 
-pycuda::complex<float> c = lattice[i]; 
+pycuda::complex<float> c = lattice[i];
 pycuda::complex<float> z(0,0);
 
 for (int j = 0; j < max_iters; j++)
@@ -40,7 +42,13 @@ def gpu_mandelbrot(width, height, real_low, real_high, imag_low, imag_high, max_
     imag_vals = np.matrix(np.linspace(imag_high, imag_low, height), dtype=np.complex64) * 1j
 
     # put them on top of each other
-    mandelbrot_lattice = np.array(real_vals + imag_vals.transpose(), dtype=np.complex64)    
+    mandelbrot_lattice = np.array(real_vals + imag_vals.transpose(), dtype=np.complex64)
+
+    # alternative:
+    # real = np.linspace(real_low, real_high, width)
+    # imag = np.linspace(real_low, real_high, width) * 1j
+    # mesh1, mesh2 = np.meshgrid(real, imag)
+    # lattice = mesh1 + mesh2
     
     # copy complex lattice to the GPU
     mandelbrot_lattice_gpu = gpuarray.to_gpu(mandelbrot_lattice)

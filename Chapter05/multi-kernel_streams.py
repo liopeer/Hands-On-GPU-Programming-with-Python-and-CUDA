@@ -33,6 +33,7 @@ mult_ker = ker.get_function('mult_ker')
 data = []
 data_gpu = []
 gpu_out = []
+# we need to create a steam object for each array/kernel launch pair
 streams = []
 
 for _ in range(num_arrays):
@@ -61,4 +62,4 @@ t_end = time()
 for k in range(num_arrays):
     assert (np.allclose(gpu_out[k], data[k]))
 
-print 'Total time: %f' % (t_end - t_start)
+print('Total time: %f' % (t_end - t_start))
